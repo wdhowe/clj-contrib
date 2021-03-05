@@ -1,81 +1,39 @@
-# clj-project
+# clj-contrib
 
-A template for starting a clj tools based project.
+ A library of Clojure functions to enhance clojure.core.
 
-## Overview
+## Getting Started
 
-Batteries included features:
+Using the clj-contrib library.
 
-- Project dirs/file basics
-  - src and test directory structure.
-  - .gitignore, CHANGELOG, config.edn, deps.edn, LICENSE, README.
-- Config: Configuration/Env variables via 'clj-config'.
-- Dependencies: Dependency version checks with 'deps-ancient'.
-- Deploy: Publish uberjars to clojars via 'deps-deploy'.
-- Tests: Clojure 'test-runner' from Cognitect.
-- Packaging: Create uberjars with 'cambada'.
+### Installation
 
-Some features above selected from the clj-tools list [available here](https://github.com/clojure/tools.deps.alpha/wiki/Tools).
-
-## Execute the -main function
-
-Run the -main function in the namespace/core.clj file:
-
-- Method 1: Implied -main function in the namespace:
+Clojure CLI/deps.edn
 
 ```clojure
-clj -M -m clj-project.core
+clj-contrib/clj-contrib {:git/url "https://github.com/wdhowe/clj-contrib.git"
+                         :sha "TODO"}
 ```
 
-- Method 2: Explicit namespace+function:
+### Include the Library
+
+In the REPL
 
 ```clojure
-clj -X clj-project.core/-main
+(require '[clj-contrib.core :as contrib])
 ```
 
-## Config
-
-Config is loaded in the following order:
-
-- A :config map in the deps.edn file. (included in this project's deps.edn)
-- config.edn on the classpath. (included in this project's dir)
-- Environment variables.
-- Java system properties.
-
-[clj-config details here.](https://gitlab.com/orangefoxcollective/clj-config)
-
-## Dependencies
-
-Check for outdated dependencies:
+In your application
 
 ```clojure
-clj -M:ancient
+(ns my-app.core
+  (:require [clj-contrib.core :as contrib]))
 ```
 
-## Deploy
+### Use the Library
 
-Deploy your uberjars to clojars:
-
-```clojure
-;; env vars for clojars
-CLOJARS_USERNAME=username
-CLOJARS_PASSWORD=clojars-token
-
-clj -M:deploy
-```
-
-## Tests
-
-In the project root directory, run the tests:
+A few usage examples.
 
 ```clojure
-clj -M:test
-```
-
-## Packaging
-
-Create an uberjar:
-
-```clojure
-clj -M:uberjar
+;; TODO
 ```

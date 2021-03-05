@@ -1,6 +1,4 @@
-{:deps {clj-config/clj-config {:git/url "https://gitlab.com/orangefoxcollective/clj-config.git"
-                               :sha "7ab17158fec395986abed66d1be5e570da091925"}
-        org.clojure/tools.deps.alpha {:mvn/version "0.9.857"}
+{:deps {org.clojure/tools.deps.alpha {:mvn/version "0.9.857"}
         org.clojure/clojure {:mvn/version "1.10.1"}}
 
  :paths ["src"]
@@ -21,7 +19,5 @@
            {:extra-deps
             {luchiniatwork/cambada {:mvn/version "1.0.5"}}
             :main-opts ["-m" "cambada.uberjar"
-                        "-m" "clj_project/core"
-                        "--app-version" "0.1.0"]}}
-
- :config {:myvar "myvalue"}}
+                        "-m" "clj_contrib/core"
+                        "--app-version" "0.1.0"]}}}
