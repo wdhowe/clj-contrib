@@ -47,4 +47,10 @@
                 :attr2 2
                 :attr3 3}
                [:attr1 :attr3]
-               inc))
+               inc)
+  (let [mymap {:attr1 1
+               :attr2 2
+               :attr3 3}]
+    (update-keys mymap
+                 (keys mymap)
+                 inc)))
