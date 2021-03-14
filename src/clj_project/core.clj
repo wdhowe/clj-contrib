@@ -54,3 +54,18 @@
     (update-keys mymap
                  (keys mymap)
                  inc)))
+
+;; Same as update-keys, but with reduce-kv instead.
+(defn update-keys2
+  "Update a map(`m`) keys(`ks`) values via the passed in function(`f`)."
+  [m ks f]
+  (reduce-kv (fn [m2 k v] (assoc m2 k (f v)))
+             m
+             (select-keys m ks)))
+
+(comment
+  (update-keys2 {:attr1 "value1"
+                 :attr2 "value2"
+                 :attr3 "value3"}
+                [:attr2 :attr3]
+                keyword))
