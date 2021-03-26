@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: apt install git
+        run: sudo apt-get update && sudo apt-get install git
       - name: Version
         run: clj -h | grep Version
       - name: Tests
