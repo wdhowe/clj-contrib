@@ -1,12 +1,12 @@
 {:deps {org.clojure/tools.deps.alpha {:mvn/version "0.11.905"}
-        org.clojure/clojure {:mvn/version "1.10.3"}}
+        org.clojure/clojure {:mvn/version "1.10.2"}}
 
  :paths ["src"]
 
  :aliases {:ancient   {:main-opts  ["-m" "deps-ancient.deps-ancient"]
                        :extra-deps {deps-ancient/deps-ancient {:mvn/version "0.0.5"}}}
 
-           :deploy {:extra-deps {slipset/deps-deploy {:mvn/version "0.1.3"}}
+           :deploy {:extra-deps {slipset/deps-deploy {:mvn/version "0.1.5"}}
                     :main-opts ["-m" "deps-deploy.deps-deploy" "deploy"
                                 "target/clj-contrib-0.1.0-standalone.jar"]}
 
