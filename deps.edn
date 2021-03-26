@@ -8,7 +8,7 @@
 
            :deploy {:extra-deps {slipset/deps-deploy {:mvn/version "0.1.5"}}
                     :main-opts ["-m" "deps-deploy.deps-deploy" "deploy"
-                                "target/clj-contrib-0.1.0-standalone.jar"]}
+                                "target/clj-project-0.1.0-standalone.jar"]}
 
            :test {:extra-paths ["test"]
                   :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
