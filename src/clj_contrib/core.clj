@@ -1,6 +1,34 @@
 (ns clj-contrib.core
   (:gen-class))
 
+;;; Simple Values
+;; Numbers
+
+(defn same-ish?
+  "Difference of `x` and `y` whithin `threshold`?
+   Returns true or false."
+  [x y threshold]
+  (<= (Math/abs (- x y)) threshold))
+
+(comment
+  (same-ish? 1.001 1.003 0.005)
+  (same-ish? 1.003 1.001 0.005)
+  (same-ish? 1.001 1.009 0.005))
+
+;; Booleans
+
+(defn bool
+  "Return the boolean value of `x`."
+  [x]
+  (boolean (Boolean/valueOf x)))
+
+(comment
+  (bool "true")
+  (bool "false"))
+
+;;; Operations
+;; Flow Control
+
 (defmacro as-some->
   "as->, with the nil checking of some->.
    Binds name to expr. When name is not nil, evaluates the first
@@ -17,17 +45,20 @@
           (last steps)))))
 
 (comment
-  ;; example 1: successfully returns the string.
+  ; example 1: successfully returns the string.
   (as-some-> {:one 1, :two 2} mythings
              (:one mythings)
              (inc mythings)
              (str "These " mythings " things and more!"))
 
-  ;; example 2: terminates early and returns nil due to the :one key not existing
+  ; example 2: terminates early and returns nil due to the :one key not existing
   (as-some-> {:two 2} mythings
              (:one mythings)
              (inc mythings)
              (str "These " mythings " things and more!")))
+
+;;; Collections
+;; Maps
 
 (defn update-keys
   "Update a map(`m`) keys(`ks`) values via the passed in function(`f`)."
@@ -55,7 +86,7 @@
                  (keys mymap)
                  inc)))
 
-;; Same as update-keys, but with reduce-kv instead.
+; Same as update-keys, but uses reduce-kv instead.
 (defn update-keys2
   "Update a map(`m`) keys(`ks`) values via the passed in function(`f`)."
   [m ks f]
