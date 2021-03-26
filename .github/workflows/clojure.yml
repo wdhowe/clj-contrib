@@ -13,8 +13,8 @@ jobs:
 
     strategy:
       matrix:
-        # JDK LTS: 8, 11, 17
-        jdk_version: [8, 11, 15, 16]
+        # JDK LTS: 11, 17
+        jdk_version: [11]
         os: [ubuntu-latest]
 
     container:
