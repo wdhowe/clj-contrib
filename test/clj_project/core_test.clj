@@ -1,6 +1,6 @@
-(ns clj-contrib.core-test
+(ns clj-project.core-test
   (:require [clojure.test :refer [deftest is testing]]
-            [clj-contrib.core :as core]))
+            [clj-project.core :as core]))
 
 (deftest as-some->-test
   (testing "as-some threading test."
