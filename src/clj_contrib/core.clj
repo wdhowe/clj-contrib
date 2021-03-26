@@ -1,4 +1,4 @@
-(ns clj-project.core
+(ns clj-contrib.core
   (:gen-class))
 
 (defmacro as-some->
