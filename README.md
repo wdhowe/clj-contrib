@@ -12,7 +12,7 @@ Clojure CLI/deps.edn
 
 ```clojure
 clj-contrib/clj-contrib {:git/url "https://github.com/wdhowe/clj-contrib.git"
-                         :sha "f76ea1d9fba24557f16fd220a4830810f63bfbdb"}
+                         :sha "57e333ac5456d7f685feabdf9e76f8d6d983e516"}
 ```
 
 ### Include the Library
@@ -20,35 +20,83 @@ clj-contrib/clj-contrib {:git/url "https://github.com/wdhowe/clj-contrib.git"
 In the REPL
 
 ```clojure
-(require '[clj-contrib.core :as contrib])
+(require '[clj-contrib.core :as cc])
+(require '[clj-contrib.core.async :as cca])
 ```
 
 In your application
 
 ```clojure
 (ns my-app.core
-  (:require [clj-contrib.core :as contrib]))
+  (:require [clj-contrib.core :as cc])
+  (:require [clj-contrib.core.async :as cca]))
 ```
 
 ### Use the Library
 
 A few usage examples.
 
+clj-contrib.core
+
 ```clojure
-;; update-keys examples
+;;; Simple Values
+;; Numbers
 
-; update selected keys' values with the inc function
-(contrib/update-keys {:attr1 1
-                      :attr2 2
-                      :attr3 3}
-                     [:attr1 :attr3]
-                     inc)
+; Check if two numbers are within a threshold.
+(same-ish? 1.001 1.003 0.005)
 
-; update all values with the inc function
+;; Booleans
+; Get the boolean value of the argument.
+(bool "true")
+
+;;; Operations
+;; Flow Control
+
+; as->, with the nil checking of some->.
+(as-some-> {:one 1, :two 2} mythings
+             (:one mythings)
+             (inc mythings)
+             (str "These " mythings " things and more!"))
+
+;;; Collections
+;; Maps
+
+; Update selected keys' values with the inc function.
+(update-keys {:attr1 1
+              :attr2 2
+              :attr3 3}
+             [:attr1 :attr3]
+             inc)
+
+; Update all values with the inc function.
 (let [mymap {:attr1 1
              :attr2 2
              :attr3 3}]
-     (contrib/update-keys mymap
-                          (keys mymap)
-                          inc))
+     (update-keys mymap
+                  (keys mymap)
+                  inc))
+```
+
+clj-contrib.core.async
+
+```clojure
+;;; loop-until: Take from an async channel and execute a function against the value.
+;;;             Stop if the function returns falsey or the max is exceeded.
+;; Stops early when the :error is encountered.
+(let [ch (async/chan)
+      stop-on-error (fn [result] (println result) (not (contains? result :error)))]
+  (async/put! ch {:success "some data"})
+  (async/put! ch {:error "bad data"})
+  (async/put! ch {:success "more data"})
+  (async/put! ch {:success "data trifecta"})
+  (loop-until ch stop-on-error 3))
+
+;; Executes to the max of 3.
+(let [ch (async/chan)
+      stop-on-error (fn [result] (println result) (not (contains? result :error)))]
+  (async/put! ch {:success "some data"})
+  (async/put! ch {:success "more data"})
+  (async/put! ch {:success "data trifecta"})
+  (async/put! ch {:error "bad data"})
+  (loop-until ch stop-on-error 3))
 ```
