@@ -59,6 +59,70 @@
 
 ;;; Collections
 ;; Maps
+(defprotocol Errors
+  "A protocol for finding errors in a collection."
+  (errors [coll] "Returns a map of the `:errors`, which are entries with `:error` keys."))
+
+(extend-protocol Errors
+  clojure.lang.Sequential
+  (errors
+    [coll]
+    (->> (filter #(contains? % :error) coll)
+         (count)
+         (hash-map :errors)))
+
+  clojure.lang.IPersistentMap
+  (errors
+    [coll]
+    (if (contains? coll :error)
+      {:errors 1}
+      {:errors 0}))
+
+  nil
+  (errors [_] {:errors 0}))
+
+(comment
+  (errors [])
+  (errors [{:error "foo"}, {:error "foo"}])
+  (errors [{:error "foo"}, {:success "foo"}])
+  (errors [{:success "foo"}, {:success "foo"}])
+  (errors {})
+  (errors {:success "foo"})
+  (errors {:error "foo"})
+  (errors nil))
+
+(defprotocol Success
+  "A protocol for finding success/non errors in a collection."
+  (success [coll] "Count all non errors as success.
+                   Returns a map of the `:success`, which are entries without ':error' keys."))
+
+(extend-protocol Success
+  clojure.lang.Sequential
+  (success
+    [coll]
+    (->> (remove #(contains? % :error) coll)
+         (count)
+         (hash-map :success)))
+
+  clojure.lang.IPersistentMap
+  (success
+    [coll]
+    (if (and (not (contains? coll :error)) (not-empty coll))
+      {:success 1}
+      {:success 0}))
+
+  nil
+  (success [_] {:success 0}))
+
+(comment
+  (success [])
+  (success [{:error "foo"}, {:error "foo"}])
+  (success [{:error "foo"}, {:success "foo"}])
+  (success [{:success "foo"}, {:success "foo"}])
+  (success {})
+  (success {:success "foo"})
+  (success {:error "foo"})
+  (success nil))
 
 (defn update-keys
   "Update a map(`m`) keys(`ks`) values via the passed in function(`f`)."
