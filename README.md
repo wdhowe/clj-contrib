@@ -12,7 +12,7 @@ Clojure CLI/deps.edn
 
 ```clojure
 clj-contrib/clj-contrib {:git/url "https://github.com/wdhowe/clj-contrib.git"
-                         :sha "57e333ac5456d7f685feabdf9e76f8d6d983e516"}
+                         :sha "cdf1515c2fb31794ac5c4ee565de397d0f94f286"}
 ```
 
 ### Include the Library
