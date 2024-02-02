@@ -1,6 +1,7 @@
 (ns clj-contrib.core.async
-  (:gen-class)
-  (:require [clojure.core.async :as async]))
+  "A library of functions to enhance clojure.core.async."
+  (:require [clojure.core.async :as async])
+  (:gen-class))
 
 (defn loop-until
   "Pulls results from a `c` async channel and executes `f` function against
