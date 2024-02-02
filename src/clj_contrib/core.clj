@@ -1,4 +1,5 @@
 (ns clj-contrib.core
+  "A library of functions to enhance clojure.core."
   (:gen-class))
 
 ;;; Simple Values
@@ -123,44 +124,3 @@
   (success {:success "foo"})
   (success {:error "foo"})
   (success nil))
-
-(defn update-keys
-  "Update a map(`m`) keys(`ks`) values via the passed in function(`f`)."
-  [m ks f]
-  (->> ks
-       (map #(f (get m %)))
-       (zipmap ks)
-       (merge m)))
-
-(comment
-  (update-keys {:attr1 "value1"
-                :attr2 "value2"
-                :attr3 "value3"}
-               [:attr2 :attr3]
-               keyword)
-  (update-keys {:attr1 1
-                :attr2 2
-                :attr3 3}
-               [:attr1 :attr3]
-               inc)
-  (let [mymap {:attr1 1
-               :attr2 2
-               :attr3 3}]
-    (update-keys mymap
-                 (keys mymap)
-                 inc)))
-
-; Same as update-keys, but uses reduce-kv instead.
-(defn update-keys2
-  "Update a map(`m`) keys(`ks`) values via the passed in function(`f`)."
-  [m ks f]
-  (reduce-kv (fn [m2 k v] (assoc m2 k (f v)))
-             m
-             (select-keys m ks)))
-
-(comment
-  (update-keys2 {:attr1 "value1"
-                 :attr2 "value2"
-                 :attr3 "value3"}
-                [:attr2 :attr3]
-                keyword))

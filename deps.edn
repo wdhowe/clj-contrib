@@ -1,24 +1,23 @@
-{:deps {org.clojure/tools.deps.alpha {:mvn/version "0.11.905"}
-        org.clojure/clojure {:mvn/version "1.10.3"}
-        org.clojure/core.async {:mvn/version "1.3.610"}}
+{;; Dependencies
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        org.clojure/core.async {:mvn/version "1.6.681"}}
+ 
+ ;; File system paths
+ :paths ["src" "resources"]
 
- :paths ["src"]
-
- :aliases {:ancient   {:main-opts  ["-m" "deps-ancient.deps-ancient"]
-                       :extra-deps {deps-ancient/deps-ancient {:mvn/version "0.0.5"}}}
-
-           :deploy {:extra-deps {slipset/deps-deploy {:mvn/version "0.1.5"}}
-                    :main-opts ["-m" "deps-deploy.deps-deploy" "deploy"
-                                "target/clj-contrib-0.1.0-standalone.jar"]}
-
-           :test {:extra-paths ["test"]
-                  :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
-                                                          :sha "b6b3193fcc42659d7e46ecd1884a228993441182"}}
-                  :main-opts ["-m" "cognitect.test-runner"]}
-
-           :uberjar
-           {:extra-deps
-            {luchiniatwork/cambada {:mvn/version "1.0.5"}}
-            :main-opts ["-m" "cambada.uberjar"
-                        "-m" "clj_contrib/core"
-                        "--app-version" "0.1.0"]}}}
+ ;; clj cli aliases
+ :aliases
+ {;; See build.clj for details of the :build alias.
+  :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}
+                 slipset/deps-deploy {:mvn/version "0.2.2"}}
+          :ns-default build}
+  
+  ;; Run tests: clj -X:test
+  :test {:extra-paths ["test"]
+         :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
+                      io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+         :exec-fn cognitect.test-runner.api/test}
+  
+  ;; Upgrade outdated deps: clj -M:outdated :upgrade true
+  :outdated {:deps {com.github.liquidz/antq {:mvn/version "RELEASE"}}
+             :main-opts ["-m" "antq.core"]}}}

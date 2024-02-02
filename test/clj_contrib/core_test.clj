@@ -42,42 +42,24 @@
 ;;; Collections
 ;; Maps
 
-(deftest update-keys-test
-  (testing "Updating map key values."
-    (let [kw (core/update-keys {:attr1 "value1"
-                                :attr2 "value2"
-                                :attr3 "value3"}
-                               [:attr2 :attr3]
-                               keyword)
-          add (core/update-keys {:attr1 1
-                                 :attr2 2
-                                 :attr3 3}
-                                [:attr1 :attr3]
-                                inc)]
-      (is (= "value1" (:attr1 kw)))
-      (is (= :value2 (:attr2 kw)))
-      (is (= :value3 (:attr3 kw)))
+(deftest errors-test
+  (testing "errors collection testing." 
+    (is (= (core/errors []) {:errors 0}))
+    (is (= (core/errors [{:error "foo"}, {:error "foo"}]) {:errors 2}))
+    (is (= (core/errors [{:error "foo"}, {:success "foo"}]) {:errors 1}))
+    (is (= (core/errors [{:success "foo"}, {:success "foo"}]) {:errors 0}))
+    (is (= (core/errors {}) {:errors 0}))
+    (is (= (core/errors {:success "foo"}) {:errors 0}))
+    (is (= (core/errors {:error "foo"}) {:errors 1}))
+    (is (= (core/errors nil) {:errors 0}))))
 
-      (is (= 2 (:attr1 add)))
-      (is (= 2 (:attr2 add)))
-      (is (= 4 (:attr3 add))))))
-
-(deftest update-keys2-test
-  (testing "Updating map key values 2 - reduce-kv method."
-    (let [kw (core/update-keys2 {:attr1 "value1"
-                                 :attr2 "value2"
-                                 :attr3 "value3"}
-                                [:attr2 :attr3]
-                                keyword)
-          add (core/update-keys2 {:attr1 1
-                                  :attr2 2
-                                  :attr3 3}
-                                 [:attr1 :attr3]
-                                 inc)]
-      (is (= "value1" (:attr1 kw)))
-      (is (= :value2 (:attr2 kw)))
-      (is (= :value3 (:attr3 kw)))
-
-      (is (= 2 (:attr1 add)))
-      (is (= 2 (:attr2 add)))
-      (is (= 4 (:attr3 add))))))
+(deftest success-test
+  (testing "success collection testing."
+    (is (= (core/success []) {:success 0}))
+    (is (= (core/success [{:error "foo"}, {:error "foo"}]) {:success 0}))
+    (is (= (core/success [{:error "foo"}, {:success "foo"}]) {:success 1}))
+    (is (= (core/success [{:success "foo"}, {:success "foo"}]) {:success 2}))
+    (is (= (core/success {}) {:success 0}))
+    (is (= (core/success {:success "foo"}) {:success 1}))
+    (is (= (core/success {:error "foo"}) {:success 0}))
+    (is (= (core/success nil) {:success 0}))))

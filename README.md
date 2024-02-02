@@ -1,6 +1,6 @@
 # clj-contrib
 
- A library of Clojure functions to enhance clojure.core.
+ A library of functions to enhance clojure.core.
 
 ## Getting Started
 
@@ -61,20 +61,13 @@ clj-contrib.core
 ;;; Collections
 ;; Maps
 
-; Update selected keys' values with the inc function.
-(update-keys {:attr1 1
-              :attr2 2
-              :attr3 3}
-             [:attr1 :attr3]
-             inc)
+; count the errors in a collection.
+(errors [{:error "foo"}, {:success "foo"}])
+(errors {:success "foo"})
 
-; Update all values with the inc function.
-(let [mymap {:attr1 1
-             :attr2 2
-             :attr3 3}]
-     (update-keys mymap
-                  (keys mymap)
-                  inc))
+; count the success (non-errors) in a collection.
+(success [{:success "foo"}, {:success "foo"}])
+(success {:error "foo"})
 ```
 
 clj-contrib.core.async
