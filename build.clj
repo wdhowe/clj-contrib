@@ -13,9 +13,12 @@
   (:require [clojure.tools.build.api :as b]
             [deps-deploy.deps-deploy :as dd]))
 
+;; Project Metadata
 (def lib 'com.github.wdhowe/clj-contrib)
+(def version "1.0.0")
+
 (defn- the-version [patch] (format "1.0.%s" patch))
-(def version (the-version (b/git-count-revs nil)))
+;(def version (the-version (b/git-count-revs nil)))
 (def snapshot (the-version "999-SNAPSHOT"))
 (def class-dir "target/classes")
 
