@@ -1,6 +1,8 @@
 # clj-contrib
 
- A library of functions to enhance clojure.core.
+[![Build Status][gh-actions-badge]][gh-actions] [![Clojars Project][clojars-badge]][clojars] [![Clojure version][clojure-v]](project.clj)
+
+A library of functions to enhance clojure.core.
 
 ## Getting Started
 
@@ -8,12 +10,7 @@ Using the clj-contrib library.
 
 ### Installation
 
-Clojure CLI/deps.edn
-
-```clojure
-clj-contrib/clj-contrib {:git/url "https://github.com/wdhowe/clj-contrib.git"
-                         :git/sha "cdf1515"}
-```
+See [Clojars for adding this library][clojars] to various project types (lein, boot, deps.edn, etc).
 
 ### Include the Library
 
@@ -93,3 +90,13 @@ clj-contrib.core.async
   (async/put! ch {:error "bad data"})
   (loop-until ch stop-on-error 3))
 ```
+
+<!-- Named page links below: /-->
+
+[gh-actions-badge]: https://github.com/wdhowe/clj-contrib/workflows/ci%2Fcd/badge.svg
+[gh-actions]: https://github.com/wdhowe/clj-contrib/actions
+[cljdoc-badge]: https://cljdoc.org/badge/com.github.wdhowe/clj-contrib
+[cljdoc-link]: https://cljdoc.org/d/com.github.wdhowe/clj-contrib/CURRENT
+[clojure-v]: https://img.shields.io/badge/clojure-1.11.1-blue.svg
+[clojars]: https://clojars.org/com.github.wdhowe/clj-contrib
+[clojars-badge]: https://img.shields.io/clojars/v/clj-contrib.svg
