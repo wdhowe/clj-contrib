@@ -99,4 +99,4 @@ clj-contrib.core.async
 [cljdoc-link]: https://cljdoc.org/d/com.github.wdhowe/clj-contrib/CURRENT
 [clojure-v]: https://img.shields.io/badge/clojure-1.11.1-blue.svg
 [clojars]: https://clojars.org/com.github.wdhowe/clj-contrib
-[clojars-badge]: https://img.shields.io/clojars/v/clj-contrib.svg
+[clojars-badge]: https://img.shields.io/clojars/v/com.github.wdhowe/clj-contrib.svg
