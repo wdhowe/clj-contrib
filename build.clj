@@ -25,11 +25,11 @@
 (defn test
   "Run all the tests."
   [opts]
-  (let [basis    (b/create-basis {:aliases [:test]})
-        cmds     (b/java-command
-                  {:basis     basis
-                   :main      'clojure.main
-                   :main-args ["-m" "cognitect.test-runner"]})
+  (let [basis (b/create-basis {:aliases [:test]})
+        cmds  (b/java-command
+                {:basis     basis
+                 :main      'clojure.main
+                 :main-args ["-m" "cognitect.test-runner"]})
         {:keys [exit]} (b/process cmds)]
     (when-not (zero? exit) (throw (ex-info "Tests failed" {}))))
   opts)
@@ -41,7 +41,7 @@
    [:licenses
     [:license
      [:name "Eclipse Public License"]
-     [:url "http://www.eclipse.org/legal/epl-v10.html"]]]
+     [:url "http://www.eclipse.org/legal/epl-v20.html"]]]
    [:developers
     [:developer
      [:name "Bill Howe"]]]
@@ -64,7 +64,7 @@
            :pom-data  (pom-template version))))
 
 (defn ci
-  "Run the CI pipeline of tests (and build the JAR)."
+  "Run the CI pipeline of: tests, write pom, and build the JAR."
   [opts]
   (test opts)
   (b/delete {:path "target"})
