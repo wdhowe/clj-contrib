@@ -27,4 +27,4 @@ jobs:
       - name: Prepare Deps
         run: clj -P
       - name: Test, Write POM, Build
-        run: clj -T:build ci
+        run: clj -T:build jar
