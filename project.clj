@@ -1,4 +1,4 @@
-(defproject clj-contrib "0.1.0"
+(defproject com.github.wdhowe/clj-contrib "1.1.0"
 
   ;;; Project Metadata
   :description "A library of functions to enhance clojure.core."
