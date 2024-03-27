@@ -18,13 +18,16 @@ jobs:
         os: [ubuntu-latest]
 
     container:
-      image: clojure:openjdk-${{ matrix.jdk_version }}-tools-deps
+      image: clojure:openjdk-${{ matrix.jdk_version }}-lein
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Version
-        run: clj --version
-      - name: Prepare Deps
-        run: clj -P
-      - name: Test, Write POM, Build
-        run: clj -T:build jar
+      - uses: actions/checkout@v2
+      - name: Info
+        run: lein version
+      - name: Package
+        run: |
+          lein deps
+          lein compile
+          lein uberjar
+      - name: Tests
+        run: lein test

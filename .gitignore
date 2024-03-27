@@ -5,6 +5,7 @@
 .clj-kondo/
 /.cpcache/
 *.jar
+/.lein-*
 .lsp/
 /.nrepl-port
 pom.xml
