@@ -1,23 +1,6 @@
 {;; Dependencies
- :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+ :deps {org.clojure/clojure {:mvn/version "1.11.2"}
         org.clojure/core.async {:mvn/version "1.6.681"}}
  
  ;; File system paths
- :paths ["src" "resources"]
-
- ;; clj cli aliases
- :aliases
- {;; See build.clj for details of the :build alias.
-  :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}
-                 slipset/deps-deploy {:mvn/version "0.2.2"}}
-          :ns-default build}
-  
-  ;; Run tests: clj -X:test
-  :test {:extra-paths ["test"]
-         :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}
-                      io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
-         :exec-fn cognitect.test-runner.api/test}
-  
-  ;; Upgrade outdated deps: clj -M:outdated :upgrade true
-  :outdated {:deps {com.github.liquidz/antq {:mvn/version "RELEASE"}}
-             :main-opts ["-m" "antq.core"]}}}
+ :paths ["src"]}
