@@ -1,0 +1,212 @@
+version: "3"
+
+# ============================================================================
+# Development Tasks
+# ============================================================================
+#
+# This Taskfile automates common development tasks.
+#
+# Prerequisites:
+#   - clojure: Clojure CLI tools (https://clojure.org/guides/install_clojure)
+#   - java: Java 11+ runtime
+#   - task: Task runner (https://taskfile.dev)
+#
+# Quick Start:
+#   task test        # Run tests
+#   task build       # Build JAR
+#
+# ============================================================================
+
+# Suppress command echoing for cleaner output
+silent: true
+
+# ============================================================================
+# Variables
+# ============================================================================
+
+vars:
+  # Project Configuration
+  PROJECT_GROUP: com.github.wdhowe
+  PROJECT_NAME: clj-contrib
+  PROJECT_VERSION:
+    sh: git describe --tags --match 'v*' --always 2>/dev/null | sed 's/^v//' || cat resources/VERSION
+
+# ============================================================================
+# Tasks
+# ============================================================================
+
+tasks:
+  # --------------------------------------------------------------------------
+  # Default Task
+  # --------------------------------------------------------------------------
+
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  # --------------------------------------------------------------------------
+  # Development
+  # --------------------------------------------------------------------------
+
+  repl:
+    desc: Start a development REPL
+    cmds:
+      - echo "Starting development REPL..."
+      - clj -M:dev
+    preconditions:
+      - sh: command -v clj
+        msg: "Clojure CLI (clj) is not installed. See: https://clojure.org/guides/install_clojure"
+
+  repl:nrepl:
+    desc: Start an nREPL server for Calva/VSCode to connect to
+    cmds:
+      - echo "Starting nREPL server for Calva..."
+      - echo ""
+      - echo "To connect from VSCode:"
+      - echo "  1. Press Ctrl+Option+C, Ctrl+Option+C (Calva connect shortcut)"
+      - 'echo "     Or: Cmd+Shift+P > Calva: Connect to a Running REPL Server in the Project"'
+      - echo "  2. Select deps.edn, then connect to the port shown below"
+      - echo ""
+      - clj -M:dev -m nrepl.cmdline --middleware '[cider.nrepl/cider-middleware]'
+    preconditions:
+      - sh: command -v clj
+        msg: "Clojure CLI (clj) is not installed. See: https://clojure.org/guides/install_clojure"
+
+  # --------------------------------------------------------------------------
+  # Quality
+  # --------------------------------------------------------------------------
+
+  lint:
+    desc: Lint source code with clj-kondo
+    cmds:
+      - echo "Linting source code..."
+      - clojure -M:lint src/ test/ dev/
+      - echo ""
+      - echo "✓ Linting complete"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
+  fmt:
+    desc: Check code formatting without making changes
+    cmds:
+      - echo "Checking code formatting..."
+      - clojure -M:cljfmt check src/ test/ dev/
+      - echo ""
+      - echo "✓ Format check complete"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
+  fmt:fix:
+    desc: Format source code with cljfmt
+    cmds:
+      - echo "Formatting source code..."
+      - clojure -M:cljfmt fix src/ test/ dev/
+      - echo ""
+      - echo "✓ Formatting complete"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
+  test:
+    desc: Run all tests (excludes integration tests). Optional pattern filter with -- <pattern>
+    cmds:
+      - |
+        if [ -n "{{.CLI_ARGS}}" ]; then
+          echo "Running tests matching '{{.CLI_ARGS}}'..."
+          clojure -X:test-m :p {{.CLI_ARGS}}
+        else
+          echo "Running tests..."
+          clojure -M:test
+        fi
+      - echo ""
+      - echo "✓ Tests passed"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
+  test:integration:
+    desc: Run integration tests. Optional pattern filter with -- <pattern>
+    cmds:
+      - |
+        if [ -n "{{.CLI_ARGS}}" ]; then
+          echo "Running integration tests matching '{{.CLI_ARGS}}'..."
+          clojure -X:test-integration :p {{.CLI_ARGS}}
+        else
+          echo "Running integration tests..."
+          clojure -M:test-integration
+        fi
+      - echo ""
+      - echo "✓ Integration tests passed"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
+  # --------------------------------------------------------------------------
+  # Build
+  # --------------------------------------------------------------------------
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - echo "Cleaning build artifacts..."
+      - clojure -T:build clean
+      - echo ""
+      - echo "✓ Clean complete"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
+  build:
+    desc: Run tests, write pom, and build the JAR
+    cmds:
+      - echo "Building JAR..."
+      - clojure -T:build jar
+      - echo ""
+      - 'echo "✓ Build complete: target/{{.PROJECT_GROUP}}/{{.PROJECT_NAME}}-{{.PROJECT_VERSION}}.jar"'
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
+  deploy:
+    desc: Deploy JAR to Clojars (requires CLOJARS_USERNAME and CLOJARS_PASSWORD)
+    cmds:
+      - echo "Deploying to Clojars..."
+      - clojure -T:build deploy
+      - echo ""
+      - echo "✓ Deploy complete"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+      - sh: test -n "$CLOJARS_USERNAME"
+        msg: "CLOJARS_USERNAME is not set"
+      - sh: test -n "$CLOJARS_PASSWORD"
+        msg: "CLOJARS_PASSWORD is not set"
+
+  # --------------------------------------------------------------------------
+  # Maintenance
+  # --------------------------------------------------------------------------
+
+  outdated:
+    desc: Check for outdated dependencies
+    cmds:
+      - echo "Checking for outdated dependencies..."
+      - clojure -M:outdated
+      - echo ""
+      - echo "✓ Outdated check complete"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
+  outdated:upgrade:
+    desc: Interactively upgrade outdated dependencies
+    cmds:
+      - echo "Upgrading outdated dependencies..."
+      - clojure -M:outdated --upgrade
+      - echo ""
+      - echo "✓ Upgrade complete"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"

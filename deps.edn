@@ -36,7 +36,7 @@
          ;; For clj -X:test
          :exec-fn cognitect.test-runner.api/test
          :exec-args {:excludes [:integration :strict]}
-         ;; For clj -M:test
+         ;; For clj -M:test (calls System/exit — preferred)
          :main-opts ["-m" "cognitect.test-runner" "-e" ":integration" "-e" ":strict"]}
 
   ;; Run tests matching pattern: clj -X:test-m :p <pattern>
@@ -50,8 +50,11 @@
   :test-integration {:extra-paths ["test"]
                      :extra-deps {org.clojure/test.check {:mvn/version "1.1.3"}
                                   io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+                     ;; For clj -X:test-integration
                      :exec-fn cognitect.test-runner.api/test
-                     :exec-args {:includes [:integration]}}
+                     :exec-args {:includes [:integration]}
+                     ;; For clj -M:test-integration (calls System/exit — preferred)
+                     :main-opts ["-m" "cognitect.test-runner" "-i" ":integration"]}
 
   ;; Run integration tests matching pattern: clj -X:test-integration-m :p <pattern>
   :test-integration-m {:extra-paths ["test" "dev"]
