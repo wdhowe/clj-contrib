@@ -1,0 +1,1 @@
+{:lint-as {clj-contrib.core/as-some-> clojure.core/as->}}

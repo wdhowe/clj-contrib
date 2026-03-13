@@ -2,7 +2,7 @@
 /checkouts
 *.class
 /classes
-.clj-kondo/
+.clj-kondo/.cache/
 /.cpcache/
 *.jar
 /.lein-*
