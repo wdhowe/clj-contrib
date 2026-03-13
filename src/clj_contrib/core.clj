@@ -1,5 +1,9 @@
 (ns clj-contrib.core
-  "A library of functions to enhance clojure.core."
+  "Core utilities that complement clojure.core.
+
+   Provides value helpers (approximate equality, boolean coercion),
+   flow control macros (nil-safe threading), and collection protocols
+   for counting errors and successes."
   (:gen-class))
 
 ;;; Simple Values
@@ -8,35 +12,28 @@
 (defn same-ish?
   "Difference of `x` and `y` within `threshold`?
 
-   Parameters:
-   - x - first number
-   - y - second number
-   - threshold - acceptable difference between x and y
+   Args:
+     x: first number
+     y: second number
+     threshold: acceptable difference between x and y
 
-   Returns true or false."
+   Returns:
+     true or false."
   [x y threshold]
   (<= (Math/abs (- x y)) threshold))
-
-(comment
-  (same-ish? 1.001 1.003 0.005)
-  (same-ish? 1.003 1.001 0.005)
-  (same-ish? 1.001 1.009 0.005))
 
 ;; Booleans
 
 (defn bool
   "Return the boolean value of `x`.
 
-   Parameters:
-   - x - value to convert to boolean
+   Args:
+     x: value to convert to boolean
 
-   Returns true or false."
+   Returns:
+     true or false."
   [x]
   (boolean (Boolean/valueOf x)))
-
-(comment
-  (bool "true")
-  (bool "false"))
 
 ;;; Operations
 ;; Flow Control
@@ -48,12 +45,13 @@
    is not nil, then binds name to result, repeating for each
    successive form.
 
-   Parameters:
-   - expr - initial expression to bind to name
-   - name - symbol to bind the threaded value to
-   - forms - forms to thread, each evaluated only when name is not nil
+   Args:
+     expr: initial expression to bind to name
+     name: symbol to bind the threaded value to
+     forms: forms to thread, each evaluated only when name is not nil
 
-   Returns the result of the last form, or nil if any step produces nil."
+   Returns:
+     The result of the last form, or nil if any step produces nil."
   [expr name & forms]
   (let [steps (map (fn [step] `(if (nil? ~name) nil ~step))
                    forms)]
@@ -63,91 +61,60 @@
           name
           (last steps)))))
 
-(comment
-  ; example 1: successfully returns the string.
-  (as-some-> {:one 1, :two 2} mythings
-             (:one mythings)
-             (inc mythings)
-             (str "These " mythings " things and more!"))
-
-  ; example 2: terminates early and returns nil due to the :one key not existing
-  (as-some-> {:two 2} mythings
-             (:one mythings)
-             (inc mythings)
-             (str "These " mythings " things and more!")))
-
 ;;; Collections
 ;; Maps
-(defprotocol Errors
-  "A protocol for finding errors in a collection."
-  (errors [coll] "Count entries with `:error` keys in coll.
+(defprotocol CountErrors
+  "A protocol for counting errors in a collection."
+  (count-errors [coll] "Count entries with `:error` keys in coll.
 
-   Parameters:
-   - coll - collection or map to check
+   Args:
+     coll: collection or map to check
 
-   Returns a map of {:errors count}."))
+   Returns:
+     A map of {:errors count}."))
 
-(extend-protocol Errors
+(extend-protocol CountErrors
   clojure.lang.Sequential
-  (errors
+  (count-errors
     [coll]
     (->> (filter #(contains? % :error) coll)
          (count)
          (hash-map :errors)))
 
   clojure.lang.IPersistentMap
-  (errors
+  (count-errors
     [coll]
     (if (contains? coll :error)
       {:errors 1}
       {:errors 0}))
 
   nil
-  (errors [_] {:errors 0}))
+  (count-errors [_] {:errors 0}))
 
-(comment
-  (errors [])
-  (errors [{:error "foo"}, {:error "foo"}])
-  (errors [{:error "foo"}, {:success "foo"}])
-  (errors [{:success "foo"}, {:success "foo"}])
-  (errors {})
-  (errors {:success "foo"})
-  (errors {:error "foo"})
-  (errors nil))
+(defprotocol CountSuccess
+  "A protocol for counting successes in a collection."
+  (count-success [coll] "Count entries without `:error` keys in coll.
 
-(defprotocol Success
-  "A protocol for finding success/non errors in a collection."
-  (success [coll] "Count entries without `:error` keys in coll.
+   Args:
+     coll: collection or map to check
 
-   Parameters:
-   - coll - collection or map to check
+   Returns:
+     A map of {:success count}."))
 
-   Returns a map of {:success count}."))
-
-(extend-protocol Success
+(extend-protocol CountSuccess
   clojure.lang.Sequential
-  (success
+  (count-success
     [coll]
     (->> (remove #(contains? % :error) coll)
          (count)
          (hash-map :success)))
 
   clojure.lang.IPersistentMap
-  (success
+  (count-success
     [coll]
     (if (and (not (contains? coll :error)) (not-empty coll))
       {:success 1}
       {:success 0}))
 
   nil
-  (success [_] {:success 0}))
-
-(comment
-  (success [])
-  (success [{:error "foo"}, {:error "foo"}])
-  (success [{:error "foo"}, {:success "foo"}])
-  (success [{:success "foo"}, {:success "foo"}])
-  (success {})
-  (success {:success "foo"})
-  (success {:error "foo"})
-  (success nil))
+  (count-success [_] {:success 0}))

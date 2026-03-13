@@ -42,24 +42,24 @@
 ;;; Collections
 ;; Maps
 
-(deftest errors-test
-  (testing "errors collection testing."
-    (is (= (core/errors []) {:errors 0}))
-    (is (= (core/errors [{:error "foo"}, {:error "foo"}]) {:errors 2}))
-    (is (= (core/errors [{:error "foo"}, {:success "foo"}]) {:errors 1}))
-    (is (= (core/errors [{:success "foo"}, {:success "foo"}]) {:errors 0}))
-    (is (= (core/errors {}) {:errors 0}))
-    (is (= (core/errors {:success "foo"}) {:errors 0}))
-    (is (= (core/errors {:error "foo"}) {:errors 1}))
-    (is (= (core/errors nil) {:errors 0}))))
+(deftest count-errors-test
+  (testing "count-errors collection testing."
+    (is (= (core/count-errors []) {:errors 0}))
+    (is (= (core/count-errors [{:error "foo"}, {:error "foo"}]) {:errors 2}))
+    (is (= (core/count-errors [{:error "foo"}, {:success "foo"}]) {:errors 1}))
+    (is (= (core/count-errors [{:success "foo"}, {:success "foo"}]) {:errors 0}))
+    (is (= (core/count-errors {}) {:errors 0}))
+    (is (= (core/count-errors {:success "foo"}) {:errors 0}))
+    (is (= (core/count-errors {:error "foo"}) {:errors 1}))
+    (is (= (core/count-errors nil) {:errors 0}))))
 
-(deftest success-test
-  (testing "success collection testing."
-    (is (= (core/success []) {:success 0}))
-    (is (= (core/success [{:error "foo"}, {:error "foo"}]) {:success 0}))
-    (is (= (core/success [{:error "foo"}, {:success "foo"}]) {:success 1}))
-    (is (= (core/success [{:success "foo"}, {:success "foo"}]) {:success 2}))
-    (is (= (core/success {}) {:success 0}))
-    (is (= (core/success {:success "foo"}) {:success 1}))
-    (is (= (core/success {:error "foo"}) {:success 0}))
-    (is (= (core/success nil) {:success 0}))))
+(deftest count-success-test
+  (testing "count-success collection testing."
+    (is (= (core/count-success []) {:success 0}))
+    (is (= (core/count-success [{:error "foo"}, {:error "foo"}]) {:success 0}))
+    (is (= (core/count-success [{:error "foo"}, {:success "foo"}]) {:success 1}))
+    (is (= (core/count-success [{:success "foo"}, {:success "foo"}]) {:success 2}))
+    (is (= (core/count-success {}) {:success 0}))
+    (is (= (core/count-success {:success "foo"}) {:success 1}))
+    (is (= (core/count-success {:error "foo"}) {:success 0}))
+    (is (= (core/count-success nil) {:success 0}))))
