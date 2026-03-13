@@ -1,6 +1,6 @@
 # clj-contrib
 
-[![Build Status][gh-actions-badge]][gh-actions] [![Clojars Project][clojars-badge]][clojars] [![Clojure version][clojure-v]](project.clj)
+[![Build Status][gh-actions-badge]][gh-actions] [![Clojars Project][clojars-badge]][clojars] [![cljdoc][cljdoc-badge]][cljdoc-link] [![Clojure version][clojure-v]](deps.edn)
 
 A library of functions to enhance clojure.core.
 
@@ -97,6 +97,6 @@ clj-contrib.core.async
 [gh-actions]: https://github.com/wdhowe/clj-contrib/actions
 [cljdoc-badge]: https://cljdoc.org/badge/com.github.wdhowe/clj-contrib
 [cljdoc-link]: https://cljdoc.org/d/com.github.wdhowe/clj-contrib/CURRENT
-[clojure-v]: https://img.shields.io/badge/clojure-1.11.1-blue.svg
+[clojure-v]: https://img.shields.io/badge/clojure-1.12.4-blue.svg
 [clojars]: https://clojars.org/com.github.wdhowe/clj-contrib
 [clojars-badge]: https://img.shields.io/clojars/v/com.github.wdhowe/clj-contrib.svg
