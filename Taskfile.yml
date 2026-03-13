@@ -13,7 +13,7 @@ version: "3"
 #
 # Quick Start:
 #   task test        # Run tests
-#   task build       # Build JAR
+#   task build:jar   # Build JAR
 #
 # ============================================================================
 
@@ -127,6 +127,28 @@ tasks:
       - sh: command -v clojure
         msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
 
+  test:reflection:
+    desc: Check for reflection warnings (prints warnings but passes)
+    cmds:
+      - echo "Checking for reflection warnings..."
+      - clojure -X:test :patterns '[".*reflection.*"]'
+      - echo ""
+      - echo "✓ Reflection check complete"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
+  test:reflection:strict:
+    desc: Strict reflection check (fails if any warnings exist)
+    cmds:
+      - echo "Running strict reflection check..."
+      - clojure -X:test :patterns '[".*reflection.*"]' :includes '[:strict]' :excludes '[:integration]'
+      - echo ""
+      - echo "✓ No reflection warnings found"
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
   test:integration:
     desc: Run integration tests. Optional pattern filter with -- <pattern>
     cmds:
@@ -159,13 +181,24 @@ tasks:
       - sh: command -v clojure
         msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
 
-  build:
-    desc: Run tests, write pom, and build the JAR
+  build:jar:
+    desc: Build the JAR
     cmds:
       - echo "Building JAR..."
       - clojure -T:build jar
       - echo ""
       - 'echo "✓ Build complete: target/{{.PROJECT_GROUP}}/{{.PROJECT_NAME}}-{{.PROJECT_VERSION}}.jar"'
+    preconditions:
+      - sh: command -v clojure
+        msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"
+
+  ci:jar:
+    desc: Run tests, write pom, and build the JAR
+    cmds:
+      - echo "Running CI pipeline (test + pom + jar)..."
+      - clojure -T:build ci-jar
+      - echo ""
+      - 'echo "✓ CI JAR pipeline complete: target/{{.PROJECT_GROUP}}/{{.PROJECT_NAME}}-{{.PROJECT_VERSION}}.jar"'
     preconditions:
       - sh: command -v clojure
         msg: "Clojure CLI is not installed. See: https://clojure.org/guides/install_clojure"

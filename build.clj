@@ -5,8 +5,11 @@
    Test:
    clj -T:build test
 
-   Test, Write POM, Build JAR:
+   Build JAR:
    clj -T:build jar
+
+   Test, Write POM, Build JAR:
+   clj -T:build ci-jar
 
    Deploy to Clojars:
    CLOJARS_USERNAME=username
@@ -119,7 +122,39 @@
     (when-not (zero? exit) (throw (ex-info "Tests failed" {}))))
   opts)
 
+(defn- build-jar
+  "Build JAR from resolved opts.
+
+   Copies source and packages.
+
+   Args:
+     opts: Resolved jar-opts map.
+
+   Returns:
+     opts."
+  [opts]
+  (println (str "Version: " version))
+  (println "Copying source...")
+  (b/copy-dir {:src-dirs (into (:resource-dirs project) (:src-dirs project))
+               :target-dir (:class-dir project)})
+  (println (str "Building JAR... " (:jar-file opts)))
+  (b/jar opts)
+  (println (format "Created %s" (:jar-file opts)))
+  opts)
+
 (defn jar
+  "Build the JAR.
+
+   Args:
+     opts: Build options map.
+
+   Returns:
+     opts."
+  [opts]
+  (clean opts)
+  (build-jar (jar-opts opts)))
+
+(defn ci-jar
   "Run the CI pipeline of tests, write pom, and build the JAR.
 
    Args:
@@ -131,15 +166,9 @@
   (test opts)
   (clean opts)
   (let [opts (jar-opts opts)]
-    (println "\nWriting pom.xml...")
+    (println "Writing pom.xml...")
     (b/write-pom opts)
-    (println "\nCopying source...")
-    (b/copy-dir {:src-dirs (into (:resource-dirs project) (:src-dirs project))
-                 :target-dir (:class-dir project)})
-    (println "\nBuilding JAR" (:jar-file opts) "...")
-    (b/jar opts)
-    (println (format "Created %s" (:jar-file opts))))
-  opts)
+    (build-jar opts)))
 
 (defn deploy
   "Deploy the JAR to Clojars.

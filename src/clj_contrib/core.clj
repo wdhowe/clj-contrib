@@ -20,7 +20,7 @@
    Returns:
      true or false."
   [x y threshold]
-  (<= (Math/abs (- x y)) threshold))
+  (<= (Math/abs (double (- x y))) threshold))
 
 ;; Booleans
 
@@ -33,7 +33,7 @@
    Returns:
      true or false."
   [x]
-  (boolean (Boolean/valueOf x)))
+  (boolean (Boolean/valueOf (str x))))
 
 ;;; Operations
 ;; Flow Control
