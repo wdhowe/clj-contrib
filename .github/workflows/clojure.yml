@@ -2,32 +2,59 @@ name: ci/cd
 
 on:
   push:
-    branches: [main, release/*]
+    branches: [main]
   pull_request:
-    branches: [main, release/*]
+    branches: [main]
 
 jobs:
   build:
-    name: Build on OpenJDK ${{ matrix.jdk_version }} / ${{ matrix.os }}
+    name: Build on Temurin JDK ${{ matrix.jdk_version }}
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        # JDK LTS: 8, 11, 17
-        jdk_version: [8, 11, 17]
-        os: [ubuntu-latest]
+        jdk_version: [11, 17, 21, 25]
 
     container:
-      image: clojure:openjdk-${{ matrix.jdk_version }}-lein
+      image: clojure:temurin-${{ matrix.jdk_version }}-tools-deps
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Info
-        run: lein version
-      - name: Package
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Cache dependencies
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.m2/repository
+            ~/.gitlibs
+            ~/.clojure/.cpcache
+          key: deps-${{ matrix.jdk_version }}-${{ hashFiles('deps.edn') }}
+          restore-keys: deps-${{ matrix.jdk_version }}-
+
+      - name: Version
+        run: clojure --version
+
+      - name: Resolve dependencies
         run: |
-          lein deps
-          lein compile
-          lein uberjar
-      - name: Tests
-        run: lein test
+          echo "Resolving main dependencies..."
+          clojure -P
+          echo "Resolving lint and format dependencies..."
+          clojure -P -M:lint:cljfmt
+          echo "Resolving test dependencies..."
+          clojure -P -X:test
+          echo "Resolving build dependencies..."
+          clojure -P -T:build
+
+      - name: Format check
+        run: clojure -M:cljfmt check src/ test/ dev/
+
+      - name: Lint
+        run: clojure -M:lint src/ test/ dev/
+
+      - name: Test
+        run: clojure -X:test
+
+      - name: Build
+        run: clojure -T:build jar
