@@ -6,7 +6,13 @@
 ;; Numbers
 
 (defn same-ish?
-  "Difference of `x` and `y` whithin `threshold`?
+  "Difference of `x` and `y` within `threshold`?
+
+   Parameters:
+   - x - first number
+   - y - second number
+   - threshold - acceptable difference between x and y
+
    Returns true or false."
   [x y threshold]
   (<= (Math/abs (- x y)) threshold))
@@ -19,7 +25,12 @@
 ;; Booleans
 
 (defn bool
-  "Return the boolean value of `x`."
+  "Return the boolean value of `x`.
+
+   Parameters:
+   - x - value to convert to boolean
+
+   Returns true or false."
   [x]
   (boolean (Boolean/valueOf x)))
 
@@ -35,7 +46,14 @@
    Binds name to expr. When name is not nil, evaluates the first
    form in the lexical context of that binding. When that result
    is not nil, then binds name to result, repeating for each
-   successive form."
+   successive form.
+
+   Parameters:
+   - expr - initial expression to bind to name
+   - name - symbol to bind the threaded value to
+   - forms - forms to thread, each evaluated only when name is not nil
+
+   Returns the result of the last form, or nil if any step produces nil."
   [expr name & forms]
   (let [steps (map (fn [step] `(if (nil? ~name) nil ~step))
                    forms)]
@@ -62,7 +80,12 @@
 ;; Maps
 (defprotocol Errors
   "A protocol for finding errors in a collection."
-  (errors [coll] "Returns a map of the `:errors`, which are entries with `:error` keys."))
+  (errors [coll] "Count entries with `:error` keys in coll.
+
+   Parameters:
+   - coll - collection or map to check
+
+   Returns a map of {:errors count}."))
 
 (extend-protocol Errors
   clojure.lang.Sequential
@@ -94,8 +117,12 @@
 
 (defprotocol Success
   "A protocol for finding success/non errors in a collection."
-  (success [coll] "Count all non errors as success.
-                   Returns a map of the `:success`, which are entries without ':error' keys."))
+  (success [coll] "Count entries without `:error` keys in coll.
+
+   Parameters:
+   - coll - collection or map to check
+
+   Returns a map of {:success count}."))
 
 (extend-protocol Success
   clojure.lang.Sequential

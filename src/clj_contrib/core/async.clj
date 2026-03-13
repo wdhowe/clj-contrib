@@ -4,13 +4,15 @@
   (:gen-class))
 
 (defn loop-until
-  "Pulls results from a `c` async channel and executes `f` function against
-   the result. Stops if the `f` function returns false/nil or the `max` is
-   exceeded.
-   - c: A core.async channel.
-   - f: Function applied to the value taken from the channel. If this function's
-        return value is falsey, the loop exits.
-   - max: The max number of loops to execute, regardless of f return value."
+  "Take from channel `c` and execute `f` against each value.
+   Stops if `f` returns falsey or `max` iterations are exceeded.
+
+   Parameters:
+   - c - a core.async channel to take values from
+   - f - function applied to each value; loop exits if it returns falsey
+   - max - maximum number of iterations, regardless of f return value
+
+   Returns nil."
   [c f max]
   (loop [i 0]
     (when (< i max)
