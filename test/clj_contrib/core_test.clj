@@ -43,7 +43,7 @@
 ;; Maps
 
 (deftest errors-test
-  (testing "errors collection testing." 
+  (testing "errors collection testing."
     (is (= (core/errors []) {:errors 0}))
     (is (= (core/errors [{:error "foo"}, {:error "foo"}]) {:errors 2}))
     (is (= (core/errors [{:error "foo"}, {:success "foo"}]) {:errors 1}))
