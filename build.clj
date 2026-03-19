@@ -17,7 +17,7 @@
    clj -T:build deploy"
   (:refer-clojure :exclude [test])
   (:require [clojure.java.shell :as shell]
-            [clojure.string :as string]
+            [clojure.string :as str]
             [clojure.tools.build.api :as b]
             [deps-deploy.deps-deploy :as dd]))
 
@@ -32,7 +32,7 @@
   (try
     (let [{:keys [exit out]} (shell/sh "git" "describe" "--tags" "--match" "v*" "--always")]
       (when (zero? exit)
-        (-> out string/trim (string/replace-first #"^v" ""))))
+        (-> out str/trim (str/replace-first #"^v" ""))))
     (catch Exception _ nil)))
 
 (def version
@@ -40,7 +40,7 @@
 
    Derived from git tags with fallback to resources/VERSION."
   (or (git-version)
-      (-> (slurp "resources/VERSION") string/trim)))
+      (-> (slurp "resources/VERSION") str/trim)))
 
 (def project
   "Project metadata."
