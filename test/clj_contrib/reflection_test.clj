@@ -12,41 +12,69 @@
   (:import [java.io PrintWriter StringWriter]))
 
 (def ^:private project-namespaces
-  "All project namespaces to check for reflection warnings.
-   Include core (which loads its dependencies via :reload-all)
-   and any other namespaces not reached transitively via core."
+  "Seed namespaces that transitively load the full project.
+   Required once (without reload) to ensure all project namespaces are loaded
+   before we discover and reload them individually."
   '[clj-contrib.core
     clj-contrib.core.async
     clj-contrib.java.runtime
     clj-contrib.java.system
     clj-contrib.string])
 
-(defn- collect-reflection-warnings
-  "Reload all namespaces with *warn-on-reflection* and capture warnings.
+(def ^:private own-ns-prefix
+  "Namespace prefix for this project.
+   Captured at compile time when *ns* is correctly bound."
+  (str/join "." (drop-last (str/split (str *ns*) #"\."))))
 
-   Returns a string containing any reflection warnings."
+(def ^:private own-ns-path-prefix
+  "Classpath prefix for this project's namespaces.
+   Used to filter reflection warnings by file path."
+  (-> own-ns-prefix (str/replace "." "/") (str/replace "-" "_")))
+
+(defn- own-namespace?
+  "True if ns-sym belongs to this project."
+  [ns-sym]
+  (str/starts-with? (str ns-sym) (str own-ns-prefix ".")))
+
+(defn- test-namespace?
+  "True if ns-sym is a test namespace (ends with -test)."
+  [ns-sym]
+  (str/ends-with? (str ns-sym) "-test"))
+
+(defn- project-ns-syms
+  "Return all currently-loaded project source namespace symbols, sorted.
+   Excludes test namespaces (reflection in tests is less critical) and
+   this namespace (to avoid re-evaluating deftest forms during reload)."
   []
+  (->> (all-ns)
+       (map ns-name)
+       (filter own-namespace?)
+       (remove test-namespace?)
+       sort))
+
+(defn- collect-reflection-warnings
+  "Reload only project namespaces with *warn-on-reflection* and capture warnings.
+   Uses :reload (not :reload-all) to avoid reloading third-party namespaces
+   whose protocol identities would be invalidated, breaking defs like
+   router/malli-coercion that hold pre-reload protocol reify objects."
+  []
+  ;; Ensure all project namespaces are loaded (no reload, just trigger loading)
+  (doseq [ns-sym project-namespaces]
+    (require ns-sym))
+  ;; Reload only our namespaces with reflection warnings enabled
   (let [warnings (StringWriter.)]
     (binding [*warn-on-reflection* true
               *err* (PrintWriter. warnings)]
-      (doseq [ns-sym project-namespaces]
-        (require ns-sym :reload-all)))
+      (doseq [ns-sym (project-ns-syms)]
+        (require ns-sym :reload)))
     (str warnings)))
-
-(def ^:private own-ns-prefix
-  "Classpath prefix for this project's namespaces.
-   Captured at compile time when *ns* is correctly bound."
-  (str/join "/" (-> (str *ns*)
-                    (str/replace "-" "_")
-                    (str/split #"\.")
-                    drop-last)))
 
 (defn- filter-own-warnings
   "Filter reflection warnings to only those from our own namespaces.
    Third-party library warnings are not actionable."
   [warnings]
   (->> (str/split-lines warnings)
-       (filter #(str/includes? % own-ns-prefix))
+       (filter #(str/includes? % own-ns-path-prefix))
        (str/join "\n")))
 
 (deftest check-reflection-warnings
